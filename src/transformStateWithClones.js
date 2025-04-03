@@ -6,32 +6,36 @@
  *
  * @return {Object[]}
  */
-
 function transformStateWithClones(state, actions) {
+  let currentStateCopy = { ...state }; // створення копії початкового стану
   const history = [];
-  let currentState = { ...state };
 
-  actions.forEach((action) => {
+  actions.forEach(action => {
     switch (action.type) {
-      case 'clear':
-        currentState = {};
-        break;
-
       case 'addProperties':
-        currentState = { ...currentState, ...action.extraData };
+        // Створення копії поточного стану з доданими властивостями
+        currentStateCopy = { ...currentStateCopy, ...action.extraData };
         break;
 
       case 'removeProperties':
-        action.keysToRemove.forEach((key) => {
-          delete currentState[key];
+        // Створення копії поточного стану та видалення вказаних властивостей
+        currentStateCopy = { ...currentStateCopy };
+        action.keysToRemove.forEach(key => {
+          delete currentStateCopy[key];
         });
         break;
 
-      default:
+      case 'clear':
+        // Створення порожнього об'єкта
+        currentStateCopy = {};
         break;
+
+      default:
+        throw new Error('Invalid action type');
     }
 
-    history.push({ ...currentState });
+    // Додаємо копію поточного стану в історію
+    history.push({ ...currentStateCopy });
   });
 
   return history;
